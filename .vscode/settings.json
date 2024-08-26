@@ -12,6 +12,8 @@
   ],
   "[prisma]": {
     "editor.formatOnSave": true
-  }
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true
   // "prettier.requireConfig": true // Usar apenas Prettier se houver um arquivo de configuração no projeto
 }

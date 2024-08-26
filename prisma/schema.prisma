@@ -14,9 +14,90 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  roles         String   @default("user")
+  password_hash String
+  created_at    DateTime @default(now())
+
+  UserProfiles UserProfile[]
 
   @@map("users")
+}
+
+model UserProfile {
+  id              String    @id @default(uuid())
+  user_id         String?
+  phone           String?
+  birth_date      DateTime?
+  address         String?
+  profile_picture String? // URL or path to profile picture
+  gender          String?
+  bio             String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  User       User?        @relation(fields: [user_id], references: [id])
+  Address    Address[]
+  Friendship Friendship[]
+  Comment    Comment[]
+  Post       Post[]
+
+  @@map("user_profiles")
+}
+
+model Address {
+  id         String  @id @default(uuid())
+  street     String
+  number     String
+  complement String?
+  city       String
+  state      String
+  zipCode    String
+  country    String
+
+  user_profile    UserProfile? @relation(fields: [user_profile_id], references: [id])
+  user_profile_id String?
+
+  @@map("addresses")
+}
+
+model Post {
+  id         String   @id @default(uuid())
+  content    String
+  created_at DateTime @default(now())
+
+  user    UserProfile @relation(fields: [user_id], references: [id])
+  user_id String
+
+  comments Comment[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  content    String
+  created_at DateTime @default(now())
+
+  user    UserProfile @relation(fields: [user_id], references: [id])
+  user_id String
+  post    Post        @relation(fields: [post_id], references: [id])
+  post_id String
+
+  @@map("comments")
+}
+
+model Friendship {
+  id         String   @id @default(uuid())
+  user_id    String
+  friend_id  String
+  created_at DateTime @default(now())
+
+  user_profile    UserProfile? @relation(fields: [user_profile_id], references: [id])
+  user_profile_id String?
+
+  @@unique([user_id, friend_id]) // Garante que cada amizade seja única
+  @@map("friendships")
 }
