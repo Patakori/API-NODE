@@ -6,8 +6,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 export async function registerController(request: FastifyRequest, reply: FastifyReply) {
-
-  console.log(request.body)
   const registerBodySchema = z.object({
     name: z.string(),
     email: z.string().email('Invalid email format'),
