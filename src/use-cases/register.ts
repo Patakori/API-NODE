@@ -1,15 +1,15 @@
-import { prisma } from "@/lib/prisma"
-import { PrismaUsersRepository } from "@/repositories/prisma/prisma-users-repository"
+
 import { UsersRepository } from "@/repositories/users-repository"
-import { hash } from "bcryptjs"
-import { UserAlredyExistsError } from "./errors/user-already-exists-error"
-import { User } from "@prisma/client"
+
+import { UserAlreadyExistsError } from "./errors/user-already-exists-error"
+import { Role, User } from "@prisma/client"
+import bcrypt from "bcryptjs"
 
 interface RegisterUseCaseRequest {
   name: string,
   email: string,
   password: string,
-  roles: string
+  role: string
 }
 
 interface RegisterUseCaseResponse {
@@ -19,20 +19,25 @@ interface RegisterUseCaseResponse {
 export class RegisterUseCase {
   constructor(private usersRepository: UsersRepository) { }
 
-  async execute({ email, name, password, roles }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
-    const password_hash = await hash(password, 6)
+  async execute({ email, name, password, role }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
+    const password_hash = await bcrypt.hash(password, 6)
 
+    if (role !== 'ADMIN' && role !== 'MEMBER') {
+      throw new Error('Invalid role');
+    }
+    const prismaRole = role as Role;
+    console.log("prismaRole", prismaRole)
     const userWithSameEmail = await this.usersRepository.findByEmail(email)
 
     if (userWithSameEmail) {
-      throw new UserAlredyExistsError()
+      throw new UserAlreadyExistsError()
     }
 
     const user = await this.usersRepository.create({
       name,
       email,
       password_hash,
-      roles
+      role: prismaRole
     })
 
     return {

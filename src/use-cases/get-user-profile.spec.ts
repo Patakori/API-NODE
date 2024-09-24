@@ -1,8 +1,7 @@
 import { expect, describe, it, beforeEach } from "vitest"
 import { InMemoryUsersRepository } from "@/repositories/in-memory/in-memory-users-repository"
-import { hash } from "bcryptjs"
+import bcrypt from "bcryptjs"
 import { GetUserProfileUseCase } from "./get-user-profile"
-import { InvalidCredentialsError } from "./errors/invalid-credentials-error"
 import { ResourceeNotFoundErrors } from "./errors/resource-not-found-errors"
 
 let usersRepository = new InMemoryUsersRepository()
@@ -19,7 +18,7 @@ describe('Get User Profile Use Case', () => {
     const createdUser = await usersRepository.create({
       name: 'John Doe',
       email: 'johndoe@gmail.com',
-      password_hash: await hash('123456', 6)
+      password_hash: await bcrypt.hash('123456', 6)
     })
 
     const { user } = await sut.execute({

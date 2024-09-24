@@ -1,8 +1,8 @@
 import { expect, describe, it, beforeEach } from "vitest"
 import { RegisterUseCase } from "./register"
-import { compare } from "bcryptjs"
+import bcrypt from "bcryptjs"
 import { InMemoryUsersRepository } from "@/repositories/in-memory/in-memory-users-repository"
-import { UserAlredyExistsError } from "./errors/user-already-exists-error"
+import { UserAlreadyExistsError } from "./errors/user-already-exists-error"
 
 let usersRepository = new InMemoryUsersRepository()
 let registerUseCase = new RegisterUseCase(usersRepository)
@@ -17,7 +17,7 @@ describe('Register Use Case', () => {
       name: 'John doe',
       email: 'johndoe@gmail.com',
       password: '123456',
-      roles: 'user'
+      role: 'MEMBER'
     })
 
     expect(user.id).toEqual(expect.any(String))
@@ -28,10 +28,10 @@ describe('Register Use Case', () => {
       name: 'John doe',
       email: 'johndoe@gmail.com',
       password: '123456',
-      roles: 'user'
+      role: 'MEMBER'
     })
 
-    const isPAsswordCorrectlyHashed = await compare(
+    const isPAsswordCorrectlyHashed = await bcrypt.compare(
       '123456',
       user.password_hash
     )
@@ -46,15 +46,15 @@ describe('Register Use Case', () => {
       name: 'John doe',
       email,
       password: '123456',
-      roles: 'user'
+      role: 'MEMBER'
     })
 
     expect(() => registerUseCase.execute({
       name: 'John doe',
       email,
       password: '123456',
-      roles: 'user'
-    })).rejects.toBeInstanceOf(UserAlredyExistsError)
+      role: 'MEMBER'
+    })).rejects.toBeInstanceOf(UserAlreadyExistsError)
   })
 
 })
