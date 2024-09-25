@@ -37,6 +37,8 @@ export async function authenticateController(request: FastifyRequest, reply: Fas
       }
     })
 
+    console.log(token)
+
     return reply
       .setCookie("refreshToken", refreshToken, {
         path: '/',
