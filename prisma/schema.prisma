@@ -25,6 +25,7 @@ model User {
   role          Role     @default(MEMBER)
   password_hash String
   created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
 
   UserProfiles UserProfile[]
 
@@ -41,7 +42,7 @@ model UserProfile {
   gender          String?
   bio             String?
   created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
+  updated_at      DateTime  @default(now())
 
   User       User?        @relation(fields: [user_id], references: [id])
   Address    Address[]

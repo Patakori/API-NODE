@@ -1,5 +1,5 @@
 
-import { InvalidCredentialsError } from "@/use-cases/errors/invalid-credentials-error";
+import { InvalidCredentialsError } from "@/application/use-cases/errors/invalid-credentials-error";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export async function refresh(request: FastifyRequest, reply: FastifyReply) {

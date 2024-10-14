@@ -1,6 +1,7 @@
+import { makeRegister } from "@/application/factories/make-register-use-case";
+import { UserAlreadyExistsError } from "@/application/use-cases/errors/user-already-exists-error";
+import { Role } from "@/domain/entities/role";
 
-import { UserAlreadyExistsError } from "@/use-cases/errors/user-already-exists-error";
-import { makeRegister } from "@/use-cases/factories/make-register-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
@@ -21,7 +22,7 @@ export async function registerController(request: FastifyRequest, reply: Fastify
       name,
       email,
       password,
-      role
+      role: role as Role
     })
   } catch (err) {
     if (err instanceof UserAlreadyExistsError) {

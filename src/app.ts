@@ -1,9 +1,10 @@
 import fastify from 'fastify';
-import { appRoutes } from './http/routes';
+
 import { ZodError } from 'zod';
 import { env } from './env';
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from "@fastify/cookie";
+import { appRoutes } from './adapters/http/routes';
 
 export const app = fastify();
 app.register(fastifyJwt, {

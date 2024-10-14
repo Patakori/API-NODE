@@ -1,5 +1,8 @@
-import { Prisma, Role, User } from "@prisma/client";
-import { UsersRepository } from "../users-repository";
+import { User } from "@/domain/entities/user";
+import { IUser } from "@/domain/interfaces/i-user";
+import { UsersRepository } from "@/domain/repositories/users-repository";
+
+
 
 export class InMemoryUsersRepository implements UsersRepository {
   public items: User[] = []
@@ -22,15 +25,16 @@ export class InMemoryUsersRepository implements UsersRepository {
     return user
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    const user = {
-      id: 'user-1',
+  async create(data: IUser): Promise<User> {
+    const user = new User({
+      id: data.id || 'user-1',
       name: data.name,
       email: data.email,
-      password_hash: data.password_hash,
-      role: Role.MEMBER,
-      created_at: new Date()
-    }
+      passwordHash: data.passwordHash,
+      role: data.role,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
     this.items.push(user)
 

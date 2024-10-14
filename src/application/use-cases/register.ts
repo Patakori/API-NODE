@@ -1,15 +1,15 @@
-
-import { UsersRepository } from "@/repositories/users-repository"
-
+import { UsersRepository } from "@/domain/repositories/users-repository"
 import { UserAlreadyExistsError } from "./errors/user-already-exists-error"
-import { Role, User } from "@prisma/client"
 import bcrypt from "bcryptjs"
+import { User } from "@/domain/entities/user"
+import { IUser } from "@/domain/interfaces/i-user"
+import { Role } from "@/domain/entities/role"
 
 interface RegisterUseCaseRequest {
   name: string,
   email: string,
   password: string,
-  role: string
+  role: Role
 }
 
 interface RegisterUseCaseResponse {
@@ -25,23 +25,26 @@ export class RegisterUseCase {
     if (role !== 'ADMIN' && role !== 'MEMBER') {
       throw new Error('Invalid role');
     }
-    const prismaRole = role as Role;
-    console.log("prismaRole", prismaRole)
+
     const userWithSameEmail = await this.usersRepository.findByEmail(email)
 
     if (userWithSameEmail) {
       throw new UserAlreadyExistsError()
     }
 
-    const user = await this.usersRepository.create({
+    const userProps: IUser = {
       name,
       email,
-      password_hash,
-      role: prismaRole
-    })
+      passwordHash: password_hash,
+      role: role as Role,
+    };
+
+    const user = new User(userProps);
+
+    const createdUser = await this.usersRepository.create(user);
 
     return {
-      user
+      user: createdUser
     }
   }
 }
