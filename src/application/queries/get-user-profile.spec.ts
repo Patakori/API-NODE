@@ -4,7 +4,8 @@ import bcrypt from "bcryptjs"
 import { GetUserProfileUseCase } from "./get-user-profile"
 
 import { InMemoryUsersRepository } from "@/infrastructure/repositories/in-memory/in-memory-users-repository"
-import { ResourceeNotFoundErrors } from "../use-cases/errors/resource-not-found-errors"
+import { ResourceNotFoundErrors } from "../use-cases/errors/resource-not-found-errors"
+import { InvalidCredentialsError } from "../use-cases/errors/invalid-credentials-error"
 
 let usersRepository = new InMemoryUsersRepository()
 let sut = new GetUserProfileUseCase(usersRepository)
@@ -28,18 +29,13 @@ describe('Get User Profile Use Case', () => {
       const { user } = await sut.execute({
         userId: createdUser.id
       })
-      expect(user.name).toEqual(expect.any('John Doe'))
+      expect(user.name).toBe('John Doe')
     }
-
-
   })
 
   it('should not be able to get user profile with wrong id', async () => {
-
-    expect(() => {
-      sut.execute({
-        userId: 'non-existing-id'
-      })
-    }).rejects.toBeInstanceOf(ResourceeNotFoundErrors)
+    expect(sut.execute({
+      userId: 'non-existing-id'
+    })).rejects.toBeInstanceOf(InvalidCredentialsError)
   })
 })
